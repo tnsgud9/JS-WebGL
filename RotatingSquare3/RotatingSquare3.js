@@ -18,12 +18,7 @@ window.onload = function init() {
   var program = initShaders(gl, "vertex-shader", "fragment-shader");
   gl.useProgram(program);
 
-  var vertices = [
-    vec2(0,1),
-    vec2(-1,0),
-    vec2(1,0),
-    vec2(0,-1)
-  ]
+  var vertices = [vec2(0, 1), vec2(-1, 0), vec2(1, 0), vec2(0, -1)];
 
   var vBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
@@ -34,28 +29,33 @@ window.onload = function init() {
   gl.enableVertexAttribArray(vPosition);
   thetaLoc = gl.getUniformLocation(program, "theta");
 
-  document.getElementById("Direction").onclick = function(){
+  document.getElementById("Direction").onclick = function () {
     console.log(event.button);
     direction = !direction;
-  }
-  document.getElementById("Controls").onchange = function(event){
-    console.log(event.target.value);
-    switch(event.target.value){
-      case "0":
+  };
+  document.getElementById("Controls").onclick = function (event) {
+    switch (event.target.index) {
+      case 0:
         direction = !direction;
         break;
-      case "1":
+      case 1:
         delay /= 2.0;
         clearInterval(intervalId);
         intervalId = setInterval(render, delay);
         break;
-      case "2":
+      case 2:
         delay *= 2.0;
         clearInterval(intervalId);
         intervalId = setInterval(render, delay);
         break;
     }
-  }
+  };
+  document.getElementById("slider").onchange = function (event) {
+    console.log(event.srcElement.value);
+    delay = event.srcElement.value;
+    clearInterval(intervalId);
+    intervalId = setInterval(render, delay);
+  };
 
   window.addEventListener("keydown", c2);
   intervalId = setInterval(render, delay);
@@ -63,17 +63,14 @@ window.onload = function init() {
 function render() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  theta += (direction ? 0.1 : -0.1);
+  theta += direction ? 0.1 : -0.1;
   gl.uniform1f(thetaLoc, theta);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // 0, 1, 2, 2, 1, 3
   // requestAnimationFrame(render);
 }
 
-
-function c2(){
-  console.log("first event");
-  console.log(event.keyCode);
-  switch(event.keyCode){
+function c2() {
+  switch (event.keyCode) {
     case 49:
       direction = !direction;
       break;
@@ -90,5 +87,4 @@ function c2(){
       intervalId = setInterval(render, delay);
       break;
   }
-
 }
